@@ -1,12 +1,39 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { React, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { ThemeProvider } from './contexts/ThemeContext';
+import AppNavigator from './AppNavigator';
+
+import AppLoading from 'expo-app-loading';
+import * as Font from 'expo-font';
+import { FontAwesome, Feather } from '@expo/vector-icons'
+
 
 export default function App() {
+
+  const [isReady, setIsReady] = useState(false);
+
+  function cacheFonts(fonts) {
+    return fonts.map(font => Font.loadAsync(font));
+  }
+
+  const loadAssets = async () => {
+    const fontAssets =  await cacheFonts([FontAwesome.font, Feather.font]);
+  }
+
+  if(!isReady) {
+    return (
+      <AppLoading 
+      startAsync={loadAssets}
+      onFinish={() => setIsReady(true)}
+      onError={console.warn}
+      />
+    )
+  }
+  
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+      <ThemeProvider>
+          <AppNavigator />
+      </ThemeProvider>
   );
 }
 
