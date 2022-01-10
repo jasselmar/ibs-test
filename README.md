@@ -6,7 +6,7 @@
 Link del APK:
 https://expo.dev/accounts/jorgemar/projects/ibs-test/builds/93286f72-de26-4941-9cac-ac143fdc2b60
 
-Puede instalar el apk tanto en un device como en un emulador.
+Puede instalar el apk tanto en un dispositivo como en un emulador.
 
 ### Cuentas
 
