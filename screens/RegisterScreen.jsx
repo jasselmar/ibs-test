@@ -3,10 +3,8 @@ import { StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView } 
 import { Layout, Text } from '@ui-kitten/components';
 import Header from '../components/Header';
 import RegisterForm from '../components/auth/RegisterForm';
-import { useAuth } from '../contexts/AuthContext';
 
 const RegisterScreen = () => {
-    const { currentUser } = useAuth();
 
     return (
         <Layout style={{ flex: 1}}>
@@ -16,7 +14,7 @@ const RegisterScreen = () => {
                 behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
                 style={styles.container} >
                     <Layout style={{ justifyContent: 'center', alignItems: 'center', width: '80%' }} >
-                        <Text style={{ marginBottom: 20 }} category='h1' >Create account { currentUser?.uid }</Text>
+                        <Text style={{ marginBottom: 20 }} category='h1' >Create account</Text>
                         <RegisterForm />
                     </Layout>
                 </KeyboardAvoidingView>

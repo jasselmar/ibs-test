@@ -10,7 +10,7 @@ import SplashScreen from './SplashScreen';
 import AdminAppointmentsCalendar from '../components/AdminAppointmentsCalendar';
 
 const Dashboard = () => {
-    const { currentUser, singedIn } = useAuth();
+    const { currentUser } = useAuth();
     const [ isAdmin, setIsAdmin ] = useState();
     const [ loading, setLoading ] = useState(true);
 
@@ -45,7 +45,7 @@ const Dashboard = () => {
         width: '100%' }} >
             <Header backButton={false} setting={true} />
             <Layout style={{ justifyContent: 'flex-start', width: '90%', marginVertical: 20 }} >
-                <Text category='h1' >Hello👋🏼 { currentUser ? 'Logged' : 'Not logged'} </Text>
+                <Text category='h1' >Hello👋🏼 </Text>
             </Layout>
 
             {isAdmin ? 

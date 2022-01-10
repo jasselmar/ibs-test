@@ -105,11 +105,6 @@ const ActionsGroup = () => {
             setSuccessModalVisible(true);
             setCreateModalVisible(false);
             clearForm()
-            userRef.update({
-                appointments: fb.firestore.FieldValue.arrayUnion({
-                    appointmentId: appointmentId
-                })
-            })
          })
             } catch(error) {
                 Alert.alert('Error creating your appointment request')

@@ -45,7 +45,9 @@ const SingleListScreen = ({ route }) => {
                         status: 'declined'
                     })
                 })
-            }).then(() => getAppointments())
+            }).then(() => {
+                setLoading(true)
+                getAppointments()})
         }
 
         const handleConfirm = () => {
@@ -55,7 +57,9 @@ const SingleListScreen = ({ route }) => {
                         status: 'confirmed'
                     })
                 })
-            }).then(() => getAppointments())
+            }).then(() => {
+                setLoading(true)
+                getAppointments()})
         }
 
         const Confirmed = () => (
