@@ -66,3 +66,11 @@ _Perspectiva de usuario en la izquierda y perspectiva de admin en la derecha_
 
 ![Manejando las citas](https://user-images.githubusercontent.com/22924299/148848382-a59b919a-b542-44b6-8e3e-0b100a8dc539.gif)
 
+### Detalles que se pueden mejorar
+
+* Performance cuando el manejo de datos y flujo de usuarios es mayor utilizando hooks como useMemo() e implementar librerias de optimización.
+* Agregar animaciones cuando se capturan los errores, de actulización de componentes, entre otras. 
+* Hacer tests automáticos.
+* Implementar el dark mode completamente (faltó Agenda y Calendar de react native calendars)
+* Optimizar las consultas hacia Firebase para menor costo de operación.
+
