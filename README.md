@@ -1,7 +1,6 @@
-# ibs-test
 # Aplicación de citas 🗓️ 📆
 
-## APK y uso
+### APK y uso
 
 Link del APK:
 https://expo.dev/accounts/jorgemar/projects/ibs-test/builds/93286f72-de26-4941-9cac-ac143fdc2b60
