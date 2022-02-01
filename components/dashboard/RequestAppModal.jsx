@@ -49,7 +49,7 @@ const LoadingIndicator = (props) => (
   </Layout>
 );
 
-const ActionsGroup = () => {
+const RequestAppModal = () => {
   const { themeMode } = useThemeContext();
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
@@ -409,7 +409,7 @@ const ActionsGroup = () => {
   );
 };
 
-export default ActionsGroup;
+export default RequestAppModal;
 
 const styles = StyleSheet.create({
   backdrop: {
