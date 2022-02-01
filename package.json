@@ -1,6 +1,6 @@
 {
   "name": "ibs-test",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -25,7 +25,7 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
-    "react-native-calendars": "^1.1274.0",
+    "react-native-calendars": "^1.1275.0",
     "react-native-modal-datetime-picker": "^13.0.1",
     "react-native-reanimated": "~2.3.1",
     "react-native-safe-area-context": "3.3.2",

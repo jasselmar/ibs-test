@@ -43,10 +43,13 @@ const Dashboard = () => {
         justifyContent: 'flex-start', 
         alignItems: 'center', 
         width: '100%' }} >
-            <Header backButton={false} setting={true} />
+                <Header backButton={false} setting={true} />
+
             <Layout style={{ justifyContent: 'flex-start', width: '90%', marginVertical: 20 }} >
                 <Text category='h1' >Hello👋🏼 </Text>
+
             </Layout>
+
 
             {isAdmin ? 
             (
