@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Keyboard,
+  Platform,
+  Alert,
+} from "react-native";
 import {
   Text,
   Layout,
@@ -7,23 +15,30 @@ import {
   ListItem,
   Button,
   Icon,
-  Divider,
+  Modal,
+  CheckBox,
+  Input,
 } from "@ui-kitten/components";
 import Header from "../components/Header";
 import { fs } from "../firebase/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import { useThemeContext } from "../contexts/ThemeContext";
 import SplashScreen from "./SplashScreen";
+import ValidationError from "../components/ValidationError";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useFormik } from "formik";
 
 const SingleListScreen = ({ route }) => {
   const { date } = route.params;
   const { singedIn, currentUser } = useAuth();
+  const { themeMode } = useThemeContext();
   const [loading, setLoading] = useState(true);
   const [isAdmin, SetIsAdmin] = useState(false);
   const [items, setItems] = useState();
-  const { themeMode } = useThemeContext();
   let appointments = [];
   let results = [];
+  const [editAppointmentModalVisible, SetEditAppointmentModalVisible] =
+    useState(false);
 
   const EmptyDay = () => {
     return (
@@ -175,11 +190,41 @@ const SingleListScreen = ({ route }) => {
       </Layout>
     );
 
+    const Pending = () => (
+      <Layout style={{ flexDirection: "row", alignItems: "center" }}>
+        <Text category="p1" style={{ marginRight: 3, color: "#F3AE3D" }}>
+          Pending
+        </Text>
+        <Icon
+          name="alert-circle-outline"
+          width={15}
+          height={15}
+          fill="#F3AE3D"
+        />
+      </Layout>
+    );
+
+    const Status = (status) => {
+      switch (status) {
+        case "confirmed":
+          return <Confirmed />;
+        case "declined":
+          return <Declined />;
+        default:
+          return <Pending />;
+      }
+    };
+
+    //formik
+
     return (
       <ListItem
         style={{
           borderBottomWidth: 1,
           borderBottomColor: themeMode === "dark" ? "#111425" : "#EEEEEE",
+          borderRadius: 15,
+          marginBottom: 10,
+          marginHorizontal: 2,
         }}
       >
         <Layout
@@ -188,7 +233,7 @@ const SingleListScreen = ({ route }) => {
             paddingHorizontal: 10,
             flexDirection: "row",
             width: "100%",
-            justifyContent: "space-between",
+            justifyContent: "space-around",
             alignItems: "center",
           }}
         >
@@ -232,11 +277,203 @@ const SingleListScreen = ({ route }) => {
                 status="success"
               ></Button>
             </Layout>
-          ) : item.status === "confirmed" ? (
-            <Confirmed />
           ) : (
-            <Declined />
+            Status(item.status)
           )}
+          <TouchableOpacity
+            onPress={() => SetEditAppointmentModalVisible(true)}
+          >
+            <Icon
+              name="more-vertical-outline"
+              width={30}
+              height={30}
+              fill="gray"
+            />
+          </TouchableOpacity>
+          <Modal
+            style={{ width: "90%" }}
+            visible={editAppointmentModalVisible}
+            backdropStyle={styles.backdrop}
+            onBackdropPress={() => {
+              clearForm();
+            }}
+          >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <KeyboardAvoidingView
+                behavior={Platform.OS == "ios" ? "padding" : "height"}
+                style={styles.container}
+              >
+                <Layout
+                  style={{
+                    width: "100%",
+                    paddingVertical: 30,
+                    paddingHorizontal: 25,
+                    borderRadius: 6,
+                  }}
+                >
+                  <Text category="h6" style={{ marginBottom: 16 }}>
+                    Edit appointment🗓️✏️
+                  </Text>
+                  <Layout style={{ marginBottom: 16, flexDirection: "row" }}>
+                    <CheckBox
+                    //checked={consultation}
+                    /* status={
+                        touched.service && errors.service ? "danger" : "basic"
+                      } */
+                    /* onChange={(c) => {
+                        if (consultation === true) {
+                          setConsultation(false);
+                          setFieldValue("service", "", true);
+                          setFieldTouched("service", true, false);
+                        } else {
+                          setConsultation(true);
+                          setTherapy(false);
+                          setSurgery(false);
+                          setFieldValue("service", "Consultation", true);
+                        }
+                      }} */
+                    >
+                      Consultation
+                    </CheckBox>
+
+                    <CheckBox
+                    //checked={therapy}
+                    /* status={
+                        touched.service && errors.service ? "danger" : "basic"
+                      } */
+                    /* onChange={(c) => {
+                        if (therapy === true) {
+                          setTherapy(false);
+                          setFieldValue("service", "", true);
+                          setFieldTouched("service", true, false);
+                        } else {
+                          setTherapy(c);
+                          setConsultation(false);
+                          setSurgery(false);
+                          setFieldValue("service", "Therapy", true);
+                        }
+                      }} */
+                    >
+                      Therapy
+                    </CheckBox>
+
+                    <CheckBox
+                    //checked={surgery}
+                    /* status={
+                        touched.service && errors.service ? "danger" : "basic"
+                      } */
+                    /* onChange={(c) => {
+                        if (surgery === true) {
+                          setSurgery(false);
+                          setFieldValue("service", "", true);
+                          setFieldTouched("service", true, false);
+                        } else {
+                          setSurgery(c);
+                          setConsultation(false);
+                          setTherapy(false);
+                          setFieldValue("service", "Surgery", true);
+                        }
+                      }} */
+                    >
+                      Surgery
+                    </CheckBox>
+                  </Layout>
+                  <Layout style={{ marginTop: -5, marginBottom: 11 }}>
+                    {/* {touched.service && errors.service && (
+                      <ValidationError message={errors.service} />
+                    )} */}
+                  </Layout>
+
+                  <Layout style={{ marginBottom: 16 }}>
+                    <Input
+                      //value={formatDateTime(values.datetime)}
+                      //onFocus={showTimePicker}
+                      placeholder="Date | Time"
+                      name="datetime"
+                      /* status={
+                        touched.datetime && errors.datetime ? "danger" : "basic"
+                      } */
+                      accessoryLeft={() => (
+                        <Icon
+                          name="calendar"
+                          height={22}
+                          width={22}
+                          fill={
+                            themeMode === "dark"
+                              ? "rgba(51, 102, 255, 0.48)"
+                              : "rgba(51, 102, 255, 0.24)"
+                          }
+                        />
+                      )}
+                    />
+                    {/* {touched.datetime && errors.datetime && (
+                      <ValidationError message={errors.datetime} />
+                    )} */}
+                    <DateTimePickerModal
+                      minimumDate={new Date()}
+                      display={Platform.OS === "ios" ? "inline" : "default"}
+                      //onConfirm={handleConfirmTime}
+                      //onCancel={hideTimePicker}
+                      //isVisible={isTimePickerVisible}
+                      mode="datetime"
+                    />
+                  </Layout>
+
+                  <Layout style={{ marginBottom: 16 }}>
+                    <Input
+                      //onChangeText={handleChange("notes")}
+                      //onBlur={handleBlur("notes")}
+                      placeholder="Notes"
+                      name="notes"
+                      textStyle={{ minHeight: 64 }}
+                      multiline={true}
+                      caption={() => (
+                        <Text
+                          appearance="hint"
+                          category="s2"
+                          style={{ marginTop: 5 }}
+                        >
+                          Optional
+                        </Text>
+                      )}
+                      /* status={
+                        touched.notes && errors.notes ? "danger" : "basic"
+                      } */
+                      accessoryLeft={() => (
+                        <Layout
+                          style={{
+                            height: "90%",
+                            backgroundColor: "transparent",
+                          }}
+                        >
+                          <Icon
+                            name="attach-2"
+                            height={22}
+                            width={22}
+                            fill={
+                              themeMode === "dark"
+                                ? "rgba(51, 102, 255, 0.48)"
+                                : "rgba(51, 102, 255, 0.24)"
+                            }
+                          />
+                        </Layout>
+                      )}
+                    />
+                    {/* {touched.notes && errors.notes && (
+                      <ValidationError message={errors.notes} />
+                    )} */}
+                  </Layout>
+
+                  <Button
+                  //onPress={handleSubmit}
+                  //accessoryLeft={isSubmitting ? LoadingIndicator : null}
+                  >
+                    Request
+                  </Button>
+                </Layout>
+              </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
+          </Modal>
         </Layout>
       </ListItem>
     );

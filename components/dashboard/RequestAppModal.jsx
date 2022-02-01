@@ -6,7 +6,6 @@ import {
   Keyboard,
   Platform,
   Alert,
-  findNodeHandle,
 } from "react-native";
 import {
   Layout,
@@ -29,7 +28,6 @@ import * as Yup from "yup";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { auth, fs, fb } from "../../firebase/firebase";
 import { useFormik } from "formik";
-import { clear } from "react-native/Libraries/LogBox/Data/LogBoxData";
 
 const CreateAppointmentSchema = Yup.object({
   service: Yup.string().min(2, "Required").required("Required"),
@@ -107,7 +105,6 @@ const RequestAppModal = () => {
     touched,
     values,
     isSubmitting,
-    setSubmitting,
     setFieldValue,
     setFieldTouched,
   } = useFormik({
