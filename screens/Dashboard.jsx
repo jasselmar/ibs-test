@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet } from "react-native";
-import { Layout, Text, Card } from "@ui-kitten/components";
+import { Layout, Text, Card, Button } from "@ui-kitten/components";
 import Header from "../components/Header";
 import RequestAppModal from "../components/dashboard/RequestAppModal";
-import ApointmentsCalendar from "../components/AppointmentsCalendar";
 import { useAuth } from "../contexts/AuthContext";
 import { fs } from "../firebase/firebase";
 import SplashScreen from "./SplashScreen";
-import AdminAppointmentsCalendar from "../components/AdminAppointmentsCalendar";
+import AppointmentsCalendar from "../components/dashboard/AppointmentsCalendar";
+import AdminAppointmentsCalendar from "../components/dashboard/AdminAppointmentsCalendar";
+import Test from "./Test";
+import { useNavigation } from "@react-navigation/native";
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
   const [isAdmin, setIsAdmin] = useState();
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
 
   const isUserAdmin = async () => {
     const appointmentsRef = fs.doc(`users/${currentUser?.uid}`);
@@ -56,6 +59,7 @@ const Dashboard = () => {
         }}
       >
         <Text category="h1">Hello👋🏼 </Text>
+        <Button onPress={() => navigation.navigate("Test")}></Button>
       </Layout>
 
       {isAdmin ? (
@@ -73,7 +77,7 @@ const Dashboard = () => {
       ) : (
         <>
           <RequestAppModal />
-          <ApointmentsCalendar />
+          <AppointmentsCalendar />
         </>
       )}
     </Layout>
