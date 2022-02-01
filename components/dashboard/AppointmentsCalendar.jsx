@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useRef, useState, useEffect } from "react";
 import { Alert, StyleSheet } from "react-native";
 import { Layout, Text, Icon, Button } from "@ui-kitten/components";
-import { Agenda } from "react-native-calendars";
+import { Calendar } from "react-native-calendars";
 import { useThemeContext } from "../../contexts/ThemeContext";
 import { fs } from "../../firebase/firebase";
 import { useAuth } from "../../contexts/AuthContext";
@@ -17,48 +17,6 @@ const AppointmentsCalendar = () => {
   const { singedIn, currentUser } = useAuth();
   const navigation = useNavigation();
   const today = new Date();
-
-  const EmptyDay = () => {
-    return (
-      <Layout
-        level="2"
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      >
-        <Layout
-          level="2"
-          style={{ flexDirection: "row", alignItems: "center" }}
-        >
-          <Icon
-            name="alert-circle-outline"
-            width={22}
-            height={22}
-            fill={themeMode === "dark" ? "white" : "black"}
-            status="info"
-          />
-          {singedIn ? (
-            <Text>You have no appointments for this day</Text>
-          ) : (
-            <Text>
-              You need to{" "}
-              <Text
-                style={{ textDecorationLine: "underline" }}
-                onPress={() => navigation.navigate("RegisterScreen")}
-              >
-                register
-              </Text>{" "}
-              or{" "}
-              <Text
-                style={{ textDecorationLine: "underline" }}
-                onPress={() => navigation.navigate("LoginScreen")}
-              >
-                log in
-              </Text>
-            </Text>
-          )}
-        </Layout>
-      </Layout>
-    );
-  };
 
   const AppointmentItem = ({ item }) => {
     return (
@@ -143,17 +101,15 @@ const AppointmentsCalendar = () => {
     if (!singedIn || appointments === undefined) return;
     else {
       appointments.forEach((item) => {
-        result[formatDate(item.datetime.toDate())] = [
-          {
-            service: item.service,
-            requested: formatDate(item.requestedAt.toDate()),
-            status: item.status,
-          },
-        ];
+        result[formatDate(item.datetime.toDate())] = { marked: true };
       });
       setItems(result);
       setLoading(false);
     }
+  };
+
+  const handleDayPress = (date) => {
+    navigation.navigate("SingleListScreen", { date });
   };
 
   const formatDate = (date) => {
@@ -191,15 +147,10 @@ const AppointmentsCalendar = () => {
       >
         <Text category="s1">My appointments</Text>
       </Layout>
-      <Agenda
-        items={items}
-        renderItem={(item) => {
-          return <AppointmentItem item={item} />;
-        }}
+      <Calendar
+        onDayPress={handleDayPress}
+        markedDates={items}
         minDate={formatDate(today)}
-        pastScrollRange={2}
-        showClosingKnob={true}
-        renderEmptyData={EmptyDay}
         style={{
           marginBottom: 15,
           borderRadius: 6,

@@ -56,6 +56,7 @@ const AdminAppointmentsCalendar = () => {
   const handleDayPress = (date) => {
     navigation.navigate("SingleListScreen", { date });
   };
+
   useEffect(() => {
     if (singedIn) {
       const unsubscribe = getAppointments();

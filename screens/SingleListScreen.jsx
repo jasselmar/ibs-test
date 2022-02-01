@@ -17,25 +17,87 @@ import SplashScreen from "./SplashScreen";
 
 const SingleListScreen = ({ route }) => {
   const { date } = route.params;
-  const { singedIn } = useAuth();
+  const { singedIn, currentUser } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [isAdmin, SetIsAdmin] = useState(false);
   const [items, setItems] = useState();
   const { themeMode } = useThemeContext();
   let appointments = [];
   let results = [];
 
-  const getAppointments = () => {
-    fs.collection("appointments").onSnapshot((querySnapshot) => {
-      if (querySnapshot.size > 0) {
-        querySnapshot.forEach((documentSnapshot) => {
-          appointments = [...appointments, documentSnapshot.data()];
+  const EmptyDay = () => {
+    return (
+      <Layout
+        level="2"
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <Layout
+          level="2"
+          style={{ flexDirection: "row", alignItems: "center" }}
+        >
+          <Icon
+            name="alert-circle-outline"
+            width={22}
+            height={22}
+            fill={themeMode === "dark" ? "white" : "black"}
+            status="info"
+          />
+          {singedIn ? (
+            <Text>You have no appointments for this day</Text>
+          ) : (
+            <Text>
+              You need to{" "}
+              <Text
+                style={{ textDecorationLine: "underline" }}
+                onPress={() => navigation.navigate("RegisterScreen")}
+              >
+                register
+              </Text>{" "}
+              or{" "}
+              <Text
+                style={{ textDecorationLine: "underline" }}
+                onPress={() => navigation.navigate("LoginScreen")}
+              >
+                log in
+              </Text>
+            </Text>
+          )}
+        </Layout>
+      </Layout>
+    );
+  };
+
+  const getAppointments = async () => {
+    const userRef = fs.doc(`users/${currentUser.uid}`);
+    const snapShot = await userRef.get();
+
+    if (snapShot.data().admin) {
+      SetIsAdmin(true);
+      fs.collection("appointments").onSnapshot((querySnapshot) => {
+        if (querySnapshot.size > 0) {
+          querySnapshot.forEach((documentSnapshot) => {
+            appointments = [...appointments, documentSnapshot.data()];
+          });
+          filterAppointments();
+        } else {
+          setLoading(false);
+        }
+      }),
+        () => Alert.alert("Error on loading appointments");
+    } else {
+      fs.collection("appointments")
+        .where("client", "==", userRef)
+        .onSnapshot((querySnapshot) => {
+          if (querySnapshot.size > 0) {
+            querySnapshot.forEach((documentSnapshot) => {
+              appointments = [...appointments, documentSnapshot.data()];
+            });
+            filterAppointments();
+          } else {
+            setLoading(false);
+          }
         });
-        filterAppointments();
-      } else {
-        setLoading(false);
-      }
-    }),
-      () => Alert.alert("Error on loading appointments");
+    }
   };
 
   const filterAppointments = () => {
@@ -139,7 +201,7 @@ const SingleListScreen = ({ route }) => {
               {item.notes}
             </Text>
           </Layout>
-          {item.status === "pending" ? (
+          {(item.status === "pending") & isAdmin ? (
             <Layout style={{ flexDirection: "row" }}>
               <Button
                 style={{ height: 40, marginRight: 10 }}
@@ -213,6 +275,7 @@ const SingleListScreen = ({ route }) => {
       const unsubscribe = getAppointments();
       return unsubscribe;
     } else {
+      setLoading(false);
       return;
     }
   }, []);
@@ -232,7 +295,7 @@ const SingleListScreen = ({ route }) => {
           }`}
         </Text>
       </Layout>
-      <List data={items} renderItem={renderItem} />
+      {singedIn ? <List data={items} renderItem={renderItem} /> : <EmptyDay />}
     </Layout>
   );
 };
