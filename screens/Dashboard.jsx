@@ -59,7 +59,6 @@ const Dashboard = () => {
         }}
       >
         <Text category="h1">Hello👋🏼 </Text>
-        <Button onPress={() => navigation.navigate("Test")}></Button>
       </Layout>
 
       {isAdmin ? (

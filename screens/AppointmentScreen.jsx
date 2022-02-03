@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   TouchableWithoutFeedback,
@@ -8,31 +8,30 @@ import {
   Alert,
 } from "react-native";
 import {
-  Layout,
-  Card,
   Text,
-  Icon,
-  Modal,
-  CheckBox,
-  Spinner,
-  Input,
+  Layout,
   Button,
+  Icon,
+  CheckBox,
+  Input,
+  Modal,
+  Spinner,
 } from "@ui-kitten/components";
-import { useThemeContext } from "../../contexts/ThemeContext";
-import { useAuth } from "../../contexts/AuthContext";
+import ValidationError from "../components/ValidationError";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useThemeContext } from "../contexts/ThemeContext";
+import Header from "../components/Header";
+import SplashScreen from "./SplashScreen";
 import { useNavigation } from "@react-navigation/native";
+import { fs } from "../firebase/firebase";
 import LottieView from "lottie-react-native";
 
-import ValidationError from "../ValidationError";
-import * as Yup from "yup";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { auth, fs, fb } from "../../firebase/firebase";
-import { useFormik } from "formik";
-
-const CreateAppointmentSchema = Yup.object({
+const EditAppointmentSchema = Yup.object({
   service: Yup.string().min(2, "Required").required("Required"),
   datetime: Yup.date().required("Required"),
-  notes: Yup.string().min(2, "Too short!").max(80, "Too long!"),
+  notes: Yup.string().max(80, "Too long!"),
 });
 
 const LoadingIndicator = (props) => (
@@ -47,37 +46,18 @@ const LoadingIndicator = (props) => (
   </Layout>
 );
 
-const RequestAppModal = () => {
+const AppointmentScreen = ({ route }) => {
   const { themeMode } = useThemeContext();
-  const [createModalVisible, setCreateModalVisible] = useState(false);
-  const [successModalVisible, setSuccessModalVisible] = useState(false);
-
-  const { singedIn, currentUser } = useAuth();
-  const navigation = useNavigation();
-
-  //CreateAppointmentModal
-
-  //services
+  const { item } = route.params;
+  const [loading, setLoading] = useState(true);
   const [consultation, setConsultation] = useState();
   const [therapy, setTherapy] = useState();
   const [surgery, setSurgery] = useState();
+  const [disableSave, setDisableSave] = useState(true);
+  const navigation = useNavigation();
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
 
-  const [isTimePickerVisible, setTimePickerVisible] = useState(false);
-
-  const showTimePicker = () => {
-    Keyboard.dismiss();
-    setTimePickerVisible(true);
-  };
-
-  const hideTimePicker = () => {
-    setTimePickerVisible(false);
-  };
-
-  const handleConfirmTime = (datetime) => {
-    console.log(datetime);
-    setFieldValue("datetime", datetime, true);
-    setTimePickerVisible(false);
-  };
+  console.log(item.notes);
 
   const formatDateTime = (datetime) => {
     if (datetime === "") return;
@@ -97,7 +77,23 @@ const RequestAppModal = () => {
     return formattedDate;
   };
 
-  //formik
+  const [isTimePickerVisible, setTimePickerVisible] = useState(false);
+
+  const showTimePicker = () => {
+    Keyboard.dismiss();
+    setTimePickerVisible(true);
+  };
+
+  const hideTimePicker = () => {
+    setTimePickerVisible(false);
+  };
+
+  const handleConfirmTime = (datetime) => {
+    setFieldValue("datetime", datetime, true);
+    setFieldTouched("datetime", true, false);
+    setTimePickerVisible(false);
+  };
+
   const {
     handleChange,
     handleBlur,
@@ -109,12 +105,40 @@ const RequestAppModal = () => {
     setFieldValue,
     setFieldTouched,
   } = useFormik({
-    initialValues: { service: "", datetime: "", notes: "" },
-    validationSchema: CreateAppointmentSchema,
+    initialValues: {
+      service: item.service,
+      datetime: "",
+      notes: item.notes,
+    },
+    validationSchema: EditAppointmentSchema,
     onSubmit: async (values) => {
-      return await createAppointment(values);
+      return await handleAppointmentUpdate(values);
     },
   });
+
+  const handleAppointmentUpdate = (values) => {
+    try {
+      fs.collection("appointments")
+        .where("appointmentId", "==", item.appointmentId)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((appointment) => {
+            appointment.ref.update({
+              service: values.service,
+              datetime: values.datetime,
+              notes: values.notes,
+            });
+          });
+        })
+        .then(() => {
+          setSuccessModalVisible(true);
+        });
+    } catch (error) {
+      Alert.alert("Error updating your appointment");
+      console.log(error.message, error);
+      throw error;
+    }
+  };
 
   const clearForm = () => {
     setFieldTouched("service", false, false);
@@ -130,51 +154,86 @@ const RequestAppModal = () => {
     setFieldValue("notes", "", false);
   };
 
-  const createAppointment = async (data) => {
-    if (!auth.currentUser) return;
-    const userRef = fs.doc(`users/${auth.currentUser.uid}`);
-    const userSnapShot = await userRef.get();
+  const fillData = () => {
+    if (item.service === "Consultation") {
+      setConsultation(true);
+      setTherapy(false);
+      setSurgery(false);
+      setFieldValue("service", "Consultation", false);
+    } else if (item.service === "Therapy") {
+      setTherapy(true);
+      setConsultation(false);
+      setSurgery(false);
+      setFieldValue("service", "Therapy", false);
+    } else if (item.service === "Surgery") {
+      setSurgery(true);
+      setConsultation(false);
+      setTherapy(false);
+      setFieldValue("service", "Surgery", false);
+    }
+    setFieldValue("datetime", item.datetime.toDate(), false);
+    setFieldValue("notes", item.notes, false);
+    setLoading(false);
+  };
 
-    if (userSnapShot.exists) {
-      const appointmentId = Math.floor((1 + Math.random()) * 0x10000).toString(
-        16
-      );
-      try {
-        await fs
-          .collection("appointments")
-          .doc(appointmentId)
-          .set({
-            appointmentId: appointmentId,
-            client: fs.doc(`users/${currentUser.uid}`),
-            requestedAt: new Date(),
-            status: "pending",
-            notes: data.notes,
-            service: data.service,
-            datetime: data.datetime,
-          })
-          .then(() => {
-            setSuccessModalVisible(true);
-            clearForm();
-            setCreateModalVisible(false);
-          });
-      } catch (error) {
-        Alert.alert("Error creating your appointment request");
-        console.log(error.message, error);
-      }
+  const isSaveable = () => {
+    if (touched.notes || touched.datetime || touched.service) {
+      setDisableSave(false);
     }
   };
 
+  console.log(touched.notes);
+  console.log(values.notes);
+
+  useEffect(() => {
+    const unsubscribe = isSaveable();
+    return unsubscribe;
+  }, [values.service, values.datetime, values.notes]);
+
+  useEffect(() => {
+    const unsubscribe = fillData();
+    return unsubscribe;
+  }, []);
+
+  if (loading) {
+    return <SplashScreen />;
+  }
+
   return (
-    <Layout style={{ width: "90%" }}>
-      <Modal
-        style={{ width: "90%" }}
-        visible={createModalVisible}
-        backdropStyle={styles.backdrop}
-        onBackdropPress={() => {
-          setCreateModalVisible(false);
-          clearForm();
-        }}
-      >
+    <>
+      <Layout style={{ flex: 1 }}>
+        <Header backButton={true} />
+        <Modal
+          style={{ width: "90%" }}
+          visible={successModalVisible}
+          backdropStyle={styles.backdrop}
+          onBackdropPress={() => setSuccessModalVisible(false)}
+        >
+          <Layout
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              paddingBottom: 25,
+              paddingHorizontal: 15,
+              borderRadius: 6,
+            }}
+          >
+            <LottieView
+              autoPlay
+              loop={false}
+              onAnimationFinish={() => setSuccessModalVisible(false)}
+              speed={2}
+              style={{
+                width: 150,
+                height: 160,
+              }}
+              source={require("../assets/success.json")}
+            />
+            <Text category="s1" style={{ textAlign: "center" }}>
+              Your appointment has been updated
+            </Text>
+          </Layout>
+        </Modal>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <KeyboardAvoidingView
             behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -188,8 +247,11 @@ const RequestAppModal = () => {
                 borderRadius: 6,
               }}
             >
-              <Text category="h6" style={{ marginBottom: 16 }}>
-                Request an appointment🗓️
+              <Text
+                category="h6"
+                style={{ marginBottom: 16, fontWeight: "600" }}
+              >
+                Edit appointment🗓️✏️ (ID #{item.appointmentId})
               </Text>
               <Layout style={{ marginBottom: 16, flexDirection: "row" }}>
                 <CheckBox
@@ -201,13 +263,14 @@ const RequestAppModal = () => {
                     if (consultation === true) {
                       setConsultation(false);
                       setFieldValue("service", "", true);
-                      setFieldTouched("service", true, false);
                     } else {
                       setConsultation(true);
                       setTherapy(false);
                       setSurgery(false);
                       setFieldValue("service", "Consultation", true);
+                      setFieldTouched("service", true, false);
                     }
+                    setFieldTouched("service", true, false);
                   }}
                 >
                   Consultation
@@ -222,13 +285,13 @@ const RequestAppModal = () => {
                     if (therapy === true) {
                       setTherapy(false);
                       setFieldValue("service", "", true);
-                      setFieldTouched("service", true, false);
                     } else {
                       setTherapy(c);
                       setConsultation(false);
                       setSurgery(false);
                       setFieldValue("service", "Therapy", true);
                     }
+                    setFieldTouched("service", true, false);
                   }}
                 >
                   Therapy
@@ -243,13 +306,13 @@ const RequestAppModal = () => {
                     if (surgery === true) {
                       setSurgery(false);
                       setFieldValue("service", "", true);
-                      setFieldTouched("service", true, false);
                     } else {
                       setSurgery(c);
                       setConsultation(false);
                       setTherapy(false);
                       setFieldValue("service", "Surgery", true);
                     }
+                    setFieldTouched("service", true, false);
                   }}
                 >
                   Surgery
@@ -298,8 +361,10 @@ const RequestAppModal = () => {
 
               <Layout style={{ marginBottom: 16 }}>
                 <Input
+                  value={values.notes}
                   onChangeText={handleChange("notes")}
                   onBlur={handleBlur("notes")}
+                  onFocus={() => setFieldTouched("notes", true, false)}
                   placeholder="Notes"
                   name="notes"
                   textStyle={{ minHeight: 64 }}
@@ -316,7 +381,10 @@ const RequestAppModal = () => {
                   status={touched.notes && errors.notes ? "danger" : "basic"}
                   accessoryLeft={() => (
                     <Layout
-                      style={{ height: "90%", backgroundColor: "transparent" }}
+                      style={{
+                        height: "90%",
+                        backgroundColor: "transparent",
+                      }}
                     >
                       <Icon
                         name="attach-2"
@@ -335,79 +403,38 @@ const RequestAppModal = () => {
                   <ValidationError message={errors.notes} />
                 )}
               </Layout>
-
-              <Button
-                onPress={handleSubmit}
-                accessoryLeft={isSubmitting ? LoadingIndicator : null}
+              <Layout
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                }}
               >
-                Request
-              </Button>
+                <Button
+                  style={{ marginRight: 10 }}
+                  appearance="outline"
+                  status="danger"
+                  onPress={() => navigation.goBack()}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onPress={handleSubmit}
+                  disabled={disableSave}
+                  accessoryLeft={isSubmitting ? LoadingIndicator : null}
+                >
+                  Update
+                </Button>
+              </Layout>
             </Layout>
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
-      </Modal>
-
-      <Modal
-        style={{ width: "90%" }}
-        visible={successModalVisible}
-        backdropStyle={styles.backdrop}
-        onBackdropPress={() => setSuccessModalVisible(false)}
-      >
-        <Layout
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            paddingBottom: 25,
-            paddingHorizontal: 15,
-            borderRadius: 6,
-          }}
-        >
-          <LottieView
-            autoPlay
-            loop={false}
-            onAnimationFinish={() => setSuccessModalVisible(false)}
-            speed={2}
-            style={{
-              width: 150,
-              height: 160,
-            }}
-            source={require("../../assets/success.json")}
-          />
-          <Text category="s1" style={{ textAlign: "center" }}>
-            Your appointment has been requested
-          </Text>
-        </Layout>
-      </Modal>
-
-      <Card
-        style={{ width: "100%", marginBottom: 16 }}
-        onPress={() => {
-          singedIn
-            ? setCreateModalVisible(true)
-            : navigation.navigate("RegisterScreen");
-        }}
-      >
-        <Layout
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            backgroundColor: "transparent",
-          }}
-        >
-          <Text category="s1">Request an appointment</Text>
-          <Icon
-            name="plus-outline"
-            width={22}
-            height={22}
-            fill={themeMode === "dark" ? "white" : "black"}
-          />
-        </Layout>
-      </Card>
-    </Layout>
+      </Layout>
+    </>
   );
 };
 
-export default RequestAppModal;
+export default AppointmentScreen;
 
 const styles = StyleSheet.create({
   backdrop: {
