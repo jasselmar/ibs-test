@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Alert } from "react-native";
+import { StyleSheet, Alert, RefreshControl } from "react-native";
 import {
   Text,
   Layout,
@@ -7,6 +7,7 @@ import {
   ListItem,
   Button,
   Icon,
+  Spinner,
 } from "@ui-kitten/components";
 import Header from "../components/Header";
 import { fs } from "../firebase/firebase";
@@ -15,6 +16,18 @@ import { useThemeContext } from "../contexts/ThemeContext";
 import SplashScreen from "./SplashScreen";
 import { useNavigation } from "@react-navigation/native";
 
+const LoadingIndicator = (props) => (
+  <Layout
+    style={{
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "transparent",
+    }}
+  >
+    <Spinner size="tiny" status="basic" />
+  </Layout>
+);
+
 const SingleListScreen = ({ route }) => {
   const { date } = route.params;
   const { singedIn, currentUser } = useAuth();
@@ -22,6 +35,7 @@ const SingleListScreen = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [items, setItems] = useState([]);
+  const [refresh, setRefresh] = useState(false);
   let appointments = [];
   let results = [];
   const navigation = useNavigation();
@@ -76,20 +90,23 @@ const SingleListScreen = ({ route }) => {
 
     if (snapShot.data().admin) {
       setIsAdmin(true);
-      fs.collection("appointments").onSnapshot((querySnapshot) => {
-        if (querySnapshot.size > 0) {
-          querySnapshot.forEach((documentSnapshot) => {
-            appointments = [...appointments, documentSnapshot.data()];
-          });
-          filterAppointments();
-        } else {
-          setLoading(false);
-        }
-      });
+      fs.collection("appointments")
+        .get()
+        .then((querySnapshot) => {
+          if (querySnapshot.size > 0) {
+            querySnapshot.forEach((documentSnapshot) => {
+              appointments = [...appointments, documentSnapshot.data()];
+            });
+            filterAppointments();
+          } else {
+            setLoading(false);
+          }
+        });
     } else {
       fs.collection("appointments")
         .where("client", "==", userRef)
-        .onSnapshot((querySnapshot) => {
+        .get()
+        .then((querySnapshot) => {
           if (querySnapshot.size > 0) {
             querySnapshot.forEach((documentSnapshot) => {
               appointments = [...appointments, documentSnapshot.data()];
@@ -112,6 +129,7 @@ const SingleListScreen = ({ route }) => {
     );
     setItems(results);
     setLoading(false);
+    setRefresh(false);
   };
 
   const formatDate = (date) => {
@@ -316,6 +334,11 @@ const SingleListScreen = ({ route }) => {
     );
   };
 
+  const onRefresh = () => {
+    setRefresh(true);
+    getAppointments();
+  };
+
   useEffect(() => {
     if (singedIn) {
       const unsubscribe = getAppointments();
@@ -337,7 +360,7 @@ const SingleListScreen = ({ route }) => {
         style={{
           marginHorizontal: 10,
           marginVertical: 20,
-          paddingHorizonta: 10,
+          paddingHorizontal: 15,
         }}
       >
         <Text style={{ fontWeight: "600" }}>
@@ -346,8 +369,34 @@ const SingleListScreen = ({ route }) => {
             date.day < 10 ? `0${date.day}` : date.day
           }`}
         </Text>
+        <Text style={{ marginTop: 5 }} category="p1">
+          Pull list down to refresh
+        </Text>
       </Layout>
-      {singedIn ? <List data={items} renderItem={Appointment} /> : <EmptyDay />}
+      {singedIn ? (
+        refresh ? (
+          <Layout
+            style={{ flex: 1, paddingTop: 20, alignItems: "center" }}
+            level="2"
+          >
+            <Spinner />
+          </Layout>
+        ) : (
+          <List
+            data={items}
+            renderItem={Appointment}
+            refreshControl={
+              <RefreshControl
+                onRefresh={onRefresh}
+                refreshing={refresh}
+                tintColor="transparent"
+              />
+            }
+          />
+        )
+      ) : (
+        <EmptyDay />
+      )}
     </Layout>
   );
 };
