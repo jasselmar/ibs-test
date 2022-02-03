@@ -3,7 +3,7 @@
 ### APK y uso
 
 Link del APK:
-https://expo.dev/accounts/jorgemar/projects/ibs-test/builds/93286f72-de26-4941-9cac-ac143fdc2b60
+https://expo.dev/accounts/jorgemar/projects/ibs-test/builds/b3354466-c8a8-4aea-9613-2100740b076c
 
 Puede instalar el apk tanto en un dispositivo como en un emulador.
 
@@ -11,40 +11,38 @@ Puede instalar el apk tanto en un dispositivo como en un emulador.
 
 _Todo en minúsculas._
 
- Cuenta  | Email | Contraseña 
-------------- | ------------- | ------------- 
-Admin  | admin@ibs.com  | admin123
-Usuario  | user@ibs.com  | user123
-
+| Cuenta  | Email         | Contraseña |
+| ------- | ------------- | ---------- |
+| Admin   | admin@ibs.com | admin123   |
+| Usuario | user@ibs.com  | user123    |
 
 El registro es totalmente funcional pero la cuenta admin la creo desde Firebase.
 
 Cualquier detalle me pueden contactar: <a href='tel:+18095193554'>(809)519-3554</a> o jjasselmartinez@gmail.com
 
-
 ### Requisitos
+
 ```
 Desarrollo de una aplicación Móvil tanto para Android como IOS, que permita programar citas de servicios.
 Eje. Servicios médicos, de taller, salón de belleza, etc.
 Que el usuario puede hacer la solicitud he dicho servicio.
 ```
 
-Simple aplicación de citas desarrollada en React Native utilizando <a href='https://expo.dev/' target='_blank'>Expo</a> para el UI y un backend serverless de la mano de Firebase. La aplicación cuenta con autenticación, permite visualizar y realizar solicitudes de citas desde la cuenta de un usuario común, así como manejar las solicitudes desde una cuenta de administrador. 
+Simple aplicación de citas desarrollada en React Native utilizando <a href='https://expo.dev/' target='_blank'>Expo</a> para el UI y un backend serverless de la mano de Firebase. La aplicación cuenta con autenticación, permite visualizar y realizar solicitudes de citas desde la cuenta de un usuario común, así como manejar las solicitudes desde una cuenta de administrador.
 
 ## Librerias utilizadas
 
-* React Navigation: para navegar entre pantallas.
-* UI Kitten: para utilizar ciertos componentes básicos prehechos y que sean compatibles para el dark mode.
-* Firebase: para la autenticación y el manejo de la base de datos con firestore.
-* Formik: para el manejo de los formularios.
-* Yup: para las validaciones de los formularios.
-* Lottie: para algunas animaciones.
-* React native calendars: para visualizar las citas con Agenda y Calendar.
-* React native modal datetime picker: para los selectores de fechas y tiempos al crear una solicitud de cita.
-* ... Entre otras que expo utiliza under the hood.
+- React Navigation: para navegar entre pantallas.
+- UI Kitten: para utilizar ciertos componentes básicos prehechos y que sean compatibles para el dark mode.
+- Firebase: para la autenticación y el manejo de la base de datos con firestore.
+- Formik: para el manejo de los formularios.
+- Yup: para las validaciones de los formularios.
+- Lottie: para algunas animaciones.
+- React native calendars: para visualizar las citas con Agenda y Calendar.
+- React native modal datetime picker: para los selectores de fechas y tiempos al crear una solicitud de cita.
+- ... Entre otras que expo utiliza under the hood.
 
 ### Pantalla de registro
-
 
 ![RegisterValidations](https://user-images.githubusercontent.com/22924299/148800181-7ac8fdb1-d709-4658-8786-3cae689e5e0c.gif)
 
@@ -68,9 +66,8 @@ _Perspectiva de usuario en la izquierda y perspectiva de admin en la derecha_
 
 ### Detalles que se pueden mejorar
 
-* Performance cuando el manejo de datos y flujo de usuarios es mayor utilizando hooks como useMemo() e implementar librerias de optimización.
-* Agregar animaciones cuando se capturan los errores, de actulización de componentes, entre otras. 
-* Hacer tests automáticos.
-* Implementar el dark mode completamente (faltó Agenda y Calendar de react native calendars)
-* Optimizar las consultas hacia Firebase para menor costo de operación.
-
+- Performance cuando el manejo de datos y flujo de usuarios es mayor utilizando hooks como useMemo() e implementar librerias de optimización.
+- Agregar animaciones cuando se capturan los errores, de actulización de componentes, entre otras.
+- Hacer tests automáticos.
+- Implementar el dark mode completamente (faltó Agenda y Calendar de react native calendars)
+- Optimizar las consultas hacia Firebase para menor costo de operación.
