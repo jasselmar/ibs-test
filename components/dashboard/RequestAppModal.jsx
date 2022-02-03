@@ -74,7 +74,6 @@ const RequestAppModal = () => {
   };
 
   const handleConfirmTime = (datetime) => {
-    console.log(datetime);
     setFieldValue("datetime", datetime, true);
     setTimePickerVisible(false);
   };

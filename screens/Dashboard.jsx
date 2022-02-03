@@ -8,7 +8,6 @@ import { fs } from "../firebase/firebase";
 import SplashScreen from "./SplashScreen";
 import AppointmentsCalendar from "../components/dashboard/AppointmentsCalendar";
 import AdminAppointmentsCalendar from "../components/dashboard/AdminAppointmentsCalendar";
-import Test from "./Test";
 import { useNavigation } from "@react-navigation/native";
 
 const Dashboard = () => {

@@ -6,7 +6,6 @@ import Dashboard from "./screens/Dashboard";
 import RegisterScreen from "./screens/RegisterScreen";
 import LoginScreen from "./screens/LoginScreen";
 import SingleListScreen from "./screens/SingleListScreen";
-import Test from "./screens/Test";
 import AppointmentScreen from "./screens/AppointmentScreen";
 
 const Stack = createNativeStackNavigator();
@@ -20,7 +19,6 @@ const UserStack = () => {
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="SingleListScreen" component={SingleListScreen} />
         <Stack.Screen name="AppointmentScreen" component={AppointmentScreen} />
-        <Stack.Screen name="Test" component={Test} />
       </Stack.Navigator>
     </>
   );

@@ -56,8 +56,7 @@ const AppointmentScreen = ({ route }) => {
   const [disableSave, setDisableSave] = useState(true);
   const navigation = useNavigation();
   const [successModalVisible, setSuccessModalVisible] = useState(false);
-
-  console.log(item.notes);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const formatDateTime = (datetime) => {
     if (datetime === "") return;
@@ -140,18 +139,12 @@ const AppointmentScreen = ({ route }) => {
     }
   };
 
-  const clearForm = () => {
-    setFieldTouched("service", false, false);
-    setFieldValue("service", "", false);
-    setConsultation(false);
-    setTherapy(false);
-    setSurgery(false);
-
-    setFieldTouched("datetime", false, false);
-    setFieldValue("datetime", "", false);
-
-    setFieldTouched("notes", false, false);
-    setFieldValue("notes", "", false);
+  const handleDelete = () => {
+    fs.doc(`appointments/${item.appointmentId}`)
+      .delete()
+      .then(() => {
+        navigation.goBack();
+      });
   };
 
   const fillData = () => {
@@ -181,9 +174,6 @@ const AppointmentScreen = ({ route }) => {
       setDisableSave(false);
     }
   };
-
-  console.log(touched.notes);
-  console.log(values.notes);
 
   useEffect(() => {
     const unsubscribe = isSaveable();
@@ -232,6 +222,46 @@ const AppointmentScreen = ({ route }) => {
             <Text category="s1" style={{ textAlign: "center" }}>
               Your appointment has been updated
             </Text>
+          </Layout>
+        </Modal>
+
+        <Modal
+          style={{ width: "90%" }}
+          visible={deleteModalVisible}
+          backdropStyle={styles.backdrop}
+          onBackdropPress={() => setDeleteModalVisible(false)}
+        >
+          <Layout
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              paddingVertical: 25,
+              paddingHorizontal: 45,
+              borderRadius: 6,
+            }}
+          >
+            <Text category="s1" style={{ textAlign: "center" }}>
+              Are you sure that you want to delete this appointment?
+            </Text>
+            <Layout
+              style={{
+                marginTop: 15,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Button
+                style={{ marginRight: 15 }}
+                onPress={() => setDeleteModalVisible(false)}
+                size="medium"
+              >
+                No
+              </Button>
+              <Button status="danger" size="medium" onPress={handleDelete}>
+                Yes, delete
+              </Button>
+            </Layout>
           </Layout>
         </Modal>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -406,25 +436,39 @@ const AppointmentScreen = ({ route }) => {
               <Layout
                 style={{
                   flexDirection: "row",
-                  justifyContent: "flex-end",
                   alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Button
-                  style={{ marginRight: 10 }}
-                  appearance="outline"
                   status="danger"
-                  onPress={() => navigation.goBack()}
+                  onPress={() => setDeleteModalVisible(true)}
                 >
-                  Cancel
+                  Delete
                 </Button>
-                <Button
-                  onPress={handleSubmit}
-                  disabled={disableSave}
-                  accessoryLeft={isSubmitting ? LoadingIndicator : null}
+                <Layout
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                  }}
                 >
-                  Update
-                </Button>
+                  <Button
+                    style={{ marginRight: 10 }}
+                    appearance="outline"
+                    status="basic"
+                    onPress={() => navigation.goBack()}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onPress={handleSubmit}
+                    disabled={disableSave}
+                    accessoryLeft={isSubmitting ? LoadingIndicator : null}
+                  >
+                    Update
+                  </Button>
+                </Layout>
               </Layout>
             </Layout>
           </KeyboardAvoidingView>

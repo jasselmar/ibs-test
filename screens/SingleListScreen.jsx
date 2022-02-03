@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Alert, RefreshControl } from "react-native";
+import { StyleSheet, RefreshControl } from "react-native";
 import {
   Text,
   Layout,
@@ -13,7 +13,6 @@ import Header from "../components/Header";
 import { fs } from "../firebase/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import { useThemeContext } from "../contexts/ThemeContext";
-import SplashScreen from "./SplashScreen";
 import { useNavigation } from "@react-navigation/native";
 
 const LoadingIndicator = (props) => (
