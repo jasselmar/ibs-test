@@ -175,7 +175,7 @@ const SingleListScreen = ({ route }) => {
           });
         })
         .then(() => {
-          setLoading(true);
+          setRefresh(true);
           getAppointments();
         });
     };
@@ -192,7 +192,7 @@ const SingleListScreen = ({ route }) => {
           });
         })
         .then(() => {
-          setLoading(true);
+          setRefresh(true);
           getAppointments();
         });
     };
