@@ -35,12 +35,10 @@ const SingleListScreen = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [items, setItems] = useState([]);
-  const [refresh, setRefresh] = useState(false);
+  const [refresh, setRefresh] = useState(true);
   let appointments = [];
   let results = [];
   const navigation = useNavigation();
-
-  console.log(date);
 
   const EmptyDay = () => {
     return (
@@ -344,14 +342,10 @@ const SingleListScreen = ({ route }) => {
       const unsubscribe = getAppointments();
       return unsubscribe;
     } else {
-      setLoading(false);
+      setRefresh(false);
       return;
     }
   }, []);
-
-  if (loading) {
-    return <SplashScreen />;
-  }
 
   return (
     <Layout style={{ flex: 1 }}>
