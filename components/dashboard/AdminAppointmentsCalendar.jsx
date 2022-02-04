@@ -27,18 +27,13 @@ const AdminAppointmentsCalendar = () => {
   };
 
   const getAppointments = () => {
-    if (true) {
-      fs
-        .collection("appointments")
-        .where("status", "!=", "declined")
-        .onSnapshot((querySnapshot) => {
-          querySnapshot.forEach((documentSnapshot) => {
-            appointments = [...appointments, documentSnapshot.data()];
-          });
-          formatAppointments();
-        }),
-        () => Alert.alert("Error on loading appointments");
-    }
+    fs.collection("appointments").onSnapshot((querySnapshot) => {
+      querySnapshot.forEach((documentSnapshot) => {
+        appointments = [...appointments, documentSnapshot.data()];
+      });
+      formatAppointments();
+    }),
+      () => Alert.alert("Error on loading appointments");
   };
 
   const formatAppointments = () => {
