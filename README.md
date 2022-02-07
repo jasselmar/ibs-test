@@ -7,12 +7,10 @@ https://expo.dev/accounts/jorgemar/projects/ibs-test/builds/b3354466-c8a8-4aea-9
 
 ### Accounts
 
-_Todo en minúsculas._
-
 | Type  | Email         | Password |
 | ----- | ------------- | -------- |
-| Admin | admin@ibs.com | admin123 |
 | User  | user@ibs.com  | user123  |
+| Admin | admin@ibs.com | admin123 |
 
 The register screen is functional for users acccounts but for admin accounts you need to use the credentials provided on the table.
 
@@ -20,9 +18,7 @@ Contact for any details: <a href='tel:+18095193554'>(809)519-3554</a> o jjasselm
 
 ### Idea
 
-```
 Mobile application for both iOS and Android, that allows the users to create appointment requests and the admin to manage them.
-```
 
 Developed using React Native with Expo for the UI and Firebase for the serverless backend. Implemented Firebase Authentication. On one hand the user can updated or delete any appointment request created by him. On the other hand, the admin can update and delete every appointment requests.
 
@@ -43,26 +39,19 @@ Developed using React Native with Expo for the UI and Firebase for the serverles
 
 ### Dashboard
 
-![Dashboard](https://user-images.githubusercontent.com/22924299/148820241-28e2a491-103c-493c-b2c1-51e365684e03.gif)
+![Dashboard-iOS](https://user-images.githubusercontent.com/22924299/152808689-35a3c081-5b63-4bd8-9f40-9b561ee366ef.png) ![Dashboard-Android](https://user-images.githubusercontent.com/22924299/152808501-a57cef5d-8ec6-4247-a27f-faeb727a442f.png)
 
-### Modal de solicitud de cita
+### Request an appointment
 
-![Request modal](https://user-images.githubusercontent.com/22924299/148844968-814df227-071a-4ecd-a395-5d89f879bfef.gif)
+![AppointmentRequestModal-iOS](https://user-images.githubusercontent.com/22924299/152812576-98db3ca8-5961-4685-8a68-afd70af575ce.png) ![AppointmentRequestModal-Android](https://user-images.githubusercontent.com/22924299/152812717-2fd78361-7524-4c88-9697-37746b81bf88.png)
 
-### Dashboard para el admin
+### List of appointments 
+The controls to confirm or decline appointment are available to admin users only.
 
-<img width="333" alt="Screen Shot 2022-01-10 at 5 56 49 PM" src="https://user-images.githubusercontent.com/22924299/148845472-3be48008-3f22-4756-a228-5359055089fe.png">
+![List-iOS](https://user-images.githubusercontent.com/22924299/152810563-b7c0a73e-158e-4ebf-bb3f-f58f3fcbc50d.png) ![List-Android](https://user-images.githubusercontent.com/22924299/152810599-bc249813-a347-440e-b05f-d5a33e1a45b4.png)
 
-### Manejando las citas
 
-_Perspectiva de usuario en la izquierda y perspectiva de admin en la derecha_
+### Edit/delete appointment screen
 
-![Manejando las citas](https://user-images.githubusercontent.com/22924299/148848382-a59b919a-b542-44b6-8e3e-0b100a8dc539.gif)
+![EditAppointment-iOS](https://user-images.githubusercontent.com/22924299/152813777-88116e1e-cf69-464b-8c2e-5f6fd75f5432.png) ![EditApoointment-Android](https://user-images.githubusercontent.com/22924299/152813799-427b1646-ed5a-4c2f-89ae-5f9fdbedc5ee.png)
 
-### Detalles que se pueden mejorar
-
-- Performance cuando el manejo de datos y flujo de usuarios es mayor utilizando hooks como useMemo() e implementar librerias de optimización.
-- Agregar animaciones cuando se capturan los errores, de actulización de componentes, entre otras.
-- Hacer tests automáticos.
-- Implementar el dark mode completamente (faltó Agenda y Calendar de react native calendars)
-- Optimizar las consultas hacia Firebase para menor costo de operación.
