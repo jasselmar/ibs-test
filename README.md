@@ -1,48 +1,43 @@
-# Aplicación de citas 🗓️ 📆
+# Appointments app 🗓️ 📆
 
-### APK y uso
+### APK
 
-Link del APK:
+APK:
 https://expo.dev/accounts/jorgemar/projects/ibs-test/builds/b3354466-c8a8-4aea-9613-2100740b076c
 
-Puede instalar el apk tanto en un dispositivo como en un emulador.
-
-### Cuentas
+### Accounts
 
 _Todo en minúsculas._
 
-| Cuenta  | Email         | Contraseña |
-| ------- | ------------- | ---------- |
-| Admin   | admin@ibs.com | admin123   |
-| Usuario | user@ibs.com  | user123    |
+| Type  | Email         | Password |
+| ----- | ------------- | -------- |
+| Admin | admin@ibs.com | admin123 |
+| User  | user@ibs.com  | user123  |
 
-El registro es totalmente funcional pero la cuenta admin la creo desde Firebase.
+The register screen is functional for users acccounts but for admin accounts you need to use the credentials provided on the table.
 
-Cualquier detalle me pueden contactar: <a href='tel:+18095193554'>(809)519-3554</a> o jjasselmartinez@gmail.com
+Contact for any details: <a href='tel:+18095193554'>(809)519-3554</a> o jjasselmartinez@gmail.com
 
-### Requisitos
+### Idea
 
 ```
-Desarrollo de una aplicación Móvil tanto para Android como IOS, que permita programar citas de servicios.
-Eje. Servicios médicos, de taller, salón de belleza, etc.
-Que el usuario puede hacer la solicitud he dicho servicio.
+Mobile application for both iOS and Android, that allows the users to create appointment requests and the admin to manage them.
 ```
 
-Simple aplicación de citas desarrollada en React Native utilizando <a href='https://expo.dev/' target='_blank'>Expo</a> para el UI y un backend serverless de la mano de Firebase. La aplicación cuenta con autenticación, permite visualizar y realizar solicitudes de citas desde la cuenta de un usuario común, así como manejar las solicitudes desde una cuenta de administrador.
+Developed using React Native with Expo for the UI and Firebase for the serverless backend. Implemented Firebase Authentication. On one hand the user can updated or delete any appointment request created by him. On the other hand, the admin can update and delete every appointment requests.
 
-## Librerias utilizadas
+## Libraries
 
-- React Navigation: para navegar entre pantallas.
-- UI Kitten: para utilizar ciertos componentes básicos prehechos y que sean compatibles para el dark mode.
-- Firebase: para la autenticación y el manejo de la base de datos con firestore.
-- Formik: para el manejo de los formularios.
-- Yup: para las validaciones de los formularios.
-- Lottie: para algunas animaciones.
-- React native calendars: para visualizar las citas con Agenda y Calendar.
-- React native modal datetime picker: para los selectores de fechas y tiempos al crear una solicitud de cita.
-- ... Entre otras que expo utiliza under the hood.
+- React Navigation.
+- UI Kitten.
+- Firebase.
+- Formik.
+- Yup.
+- Lottie.
+- React native calendars.
+- React native modal datetime picker.
 
-### Pantalla de registro
+### Register
 
 ![RegisterValidations](https://user-images.githubusercontent.com/22924299/148800181-7ac8fdb1-d709-4658-8786-3cae689e5e0c.gif)
 

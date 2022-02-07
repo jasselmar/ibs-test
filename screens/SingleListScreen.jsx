@@ -14,6 +14,7 @@ import { fs } from "../firebase/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
+import Animated from "react-native-reanimated";
 
 const LoadingIndicator = (props) => (
   <Layout
